@@ -1,0 +1,46 @@
+{
+  "name": "gemini-autocomplete",
+  "displayName": "Gemini Autocomplete",
+  "description": "Inline code completion powered by Gemini (or any OpenAI-compatible API)",
+  "version": "0.0.7",
+  "publisher": "local",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Machine Learning", "Programming Languages"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Gemini Autocomplete",
+      "properties": {
+        "geminiAutocomplete.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key. Groq (free): https://console.groq.com/keys — or any OpenAI-compatible provider."
+        },
+        "geminiAutocomplete.model": {
+          "type": "string",
+          "default": "llama-3.3-70b-versatile",
+          "description": "Model name. Groq: llama-3.3-70b-versatile, llama-3.1-8b-instant, etc."
+        },
+        "geminiAutocomplete.endpoint": {
+          "type": "string",
+          "default": "https://api.groq.com/openai/v1/chat/completions",
+          "description": "OpenAI-compatible chat completions URL. Groq default. OpenRouter: https://openrouter.ai/api/v1/chat/completions"
+        },
+        "geminiAutocomplete.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline suggestions."
+        },
+        "geminiAutocomplete.maxContextChars": {
+          "type": "number",
+          "default": 4000,
+          "description": "Chars of code before/after cursor sent as context."
+        }
+      }
+    },
+    "commands": [
+      { "command": "geminiAutocomplete.test", "title": "Gemini Autocomplete: Test" }
+    ]
+  }
+}
