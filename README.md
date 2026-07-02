@@ -39,5 +39,5 @@ Type code — ghost-text suggestions appear inline. `Tab` accepts.
 
 ## Support the team
 <a href="https://buymeacoffee.com/zaccalos" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="30">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40">
 </a>
