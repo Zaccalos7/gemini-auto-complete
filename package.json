@@ -2,7 +2,7 @@
   "name": "gemini-autocomplete",
   "displayName": "Gemini Autocomplete",
   "description": "Inline code completion powered by Gemini (or any OpenAI-compatible API)",
-  "version": "0.0.7",
+  "version": "0.1.2",
   "publisher": "local",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Machine Learning", "Programming Languages"],
