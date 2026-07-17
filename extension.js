@@ -5,7 +5,7 @@ const path = require("path");
 
 // Inline autocomplete via any OpenAI-compatible chat API (default: Groq, free, no billing).
 
-const LOG = path.join(os.tmpdir(), "gemini-autocomplete.log");
+const LOG = path.join(os.tmpdir(), "autocomplete.log");
 function log(...a) {
   const line = `[${new Date().toISOString()}] ${a.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join(" ")}\n`;
   try { fs.appendFileSync(LOG, line); } catch {}
