@@ -97,7 +97,7 @@ function activate(context) {
       if (!ed) { vscode.window.showErrorMessage("Apri un file prima."); return; }
       const text = await getCompletion(ed.document, ed.selection.active, undefined);
       if (text) vscode.window.showInformationMessage("OK: " + text.slice(0, 80));
-      else vscode.window.showErrorMessage("Fallito. Log: " + LOG);
+      else vscode.window.showErrorMessage("Failed. Log: " + LOG);
     })
   );
 }
