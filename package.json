@@ -4,7 +4,7 @@
   "description": "Inline code completion powered by Gemini (or any OpenAI-compatible API)",
   "version": "0.1.2",
   "publisher": "local",
-  "icon": "icon.png",
+  "icon": "logo-1.png",
   "engines": {
     "vscode": "^1.85.0"
   },
