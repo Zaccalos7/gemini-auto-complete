@@ -3,14 +3,14 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const LOG = path.join(os.tmpdir(), "autocomplete.log");
+const LOG = path.join(os.tmpdir(), "keypilot.log");
 function log(...a) {
   const line = `[${new Date().toISOString()}] ${a.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join(" ")}\n`;
   try { fs.appendFileSync(LOG, line); } catch { }
 }
 
 function cfg() {
-  return vscode.workspace.getConfiguration("autocomplete");
+  return vscode.workspace.getConfiguration("keypilot");
 }
 
 function sleep(ms, token) {
@@ -26,9 +26,9 @@ async function promptForApiKeyStartup() {
 
   if (!apiKey || apiKey.trim() === "") {
     log("startup: missing apiKey, prompting user");
-    const docLink = "Ottieni API Key (Google AI Studio)";
+    const docLink = "Get your API Key (Google AI Studio)";
     const selection = await vscode.window.showInformationMessage(
-      "Welcome to Autocomplete! Add your API Key to unlock AI-powered features",
+      "Welcome to Keypilot! Add your API Key to unlock AI-powered features",
       "Put here your API Key",
       docLink
     );
@@ -43,18 +43,18 @@ async function promptForApiKeyStartup() {
       });
       if (input && input.trim() !== "") {
         await c.update("apiKey", input.trim(), vscode.ConfigurationTarget.Global);
-        vscode.window.showInformationMessage("Great! Your API Key is saved and Autocomplete is ready to go.");
+        vscode.window.showInformationMessage("Great! Your API Key is saved and Keypilot is ready to go.");
       }
-    } else if (selection === "Inserisci API Key") {
+    } else if (selection === "Put here your API Key") {
       const input = await vscode.window.showInputBox({
-        prompt: "Inserisci la tua API Key",
-        placeHolder: "AIzaSy...",
+        prompt: "write your API Key",
+        placeHolder: "your key...",
         ignoreFocusOut: true,
         password: true
       });
       if (input && input.trim() !== "") {
         await c.update("apiKey", input.trim(), vscode.ConfigurationTarget.Global);
-        vscode.window.showInformationMessage("Great! Your API Key is saved and Autocomplete is ready to go.");
+        vscode.window.showInformationMessage("Great! Your API Key is saved and Keypilot is ready to go.");
       }
     }
   }
@@ -152,7 +152,7 @@ function activate(context) {
 
   context.subscriptions.push(
     vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, provider),
-    vscode.commands.registerCommand("autocomplete.test", async () => {
+    vscode.commands.registerCommand("keypilot.test", async () => {
       const c = cfg();
       if (!c.get("apiKey") || c.get("apiKey").trim() === "") {
         await promptForApiKeyStartup();

@@ -1,8 +1,8 @@
 {
-  "name": "autocomplete",
-  "displayName": "Autocomplete",
+  "name": "keypilot",
+  "displayName": "Keypilot",
   "description": "Inline code completion powered by Gemini (or any OpenAI-compatible API)",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "publisher": "local",
   "icon": "logo-1.png",
   "engines": {
@@ -18,7 +18,7 @@
   "main": "./extension.js",
   "contributes": {
     "configuration": {
-      "title": "Autocomplete",
+      "title": "Keypilot",
       "properties": {
         "autocomplete.apiKey": {
           "type": "string",
@@ -49,8 +49,8 @@
     },
     "commands": [
       {
-        "command": "autocomplete.test",
-        "title": "Autocomplete: Test"
+        "command": "keypilot.test",
+        "title": "Keypilot: Test"
       }
     ]
   }
