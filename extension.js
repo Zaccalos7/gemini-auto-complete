@@ -3,12 +3,10 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-// Inline autocomplete via any OpenAI-compatible chat API (default: Groq, free, no billing).
-
 const LOG = path.join(os.tmpdir(), "autocomplete.log");
 function log(...a) {
   const line = `[${new Date().toISOString()}] ${a.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join(" ")}\n`;
-  try { fs.appendFileSync(LOG, line); } catch {}
+  try { fs.appendFileSync(LOG, line); } catch { }
 }
 
 function cfg() {
@@ -28,19 +26,24 @@ async function getCompletion(document, position, token) {
   if (!apiKey) { log("skip: no apiKey"); return null; }
 
   if (token) {
-    if (!(await sleep(350, token))) { log("skip: debounced"); return null; }
+    if (!(await sleep(200, token))) { log("skip: debounced"); return null; }
     if (token.isCancellationRequested) { log("skip: cancelled"); return null; }
   }
 
-  const maxChars = c.get("maxContextChars");
+  const maxChars = c.get("maxContextChars") || 4000;
   const full = document.getText();
   const offset = document.offsetAt(position);
   const before = full.slice(Math.max(0, offset - maxChars), offset);
   const after = full.slice(offset, offset + maxChars);
 
-  const system = `You are a code completion engine for ${document.languageId}. ` +
-    `Output ONLY the raw code to insert at <CURSOR>. No markdown, no explanation, no repetition of existing code.`;
-  const user = `${before}<CURSOR>${after}`;
+  if (!before.trim() && !after.trim()) return null;
+
+  const system = `You are a professional IDE inline code completion agent like GitHub Copilot. ` +
+    `Your task is to generate the exact code that belongs at the <CURSOR> position inside the ${document.languageId} file. ` +
+    `Review what comes BEFORE and AFTER <CURSOR>. Output ONLY the code to be inserted. ` +
+    `Do NOT wrap in markdown code blocks. Do NOT explain. Do NOT repeat code that already exists after <CURSOR>.`;
+
+  const user = `--- FILE BEFORE CURSOR ---\n${before}\n<CURSOR>\n--- FILE AFTER CURSOR ---\n${after}`;
 
   const url = c.get("endpoint");
   const model = c.get("model");
@@ -57,8 +60,9 @@ async function getCompletion(document, position, token) {
       body: JSON.stringify({
         model,
         messages: [{ role: "system", content: system }, { role: "user", content: user }],
-        temperature: 0.2,
-        max_tokens: 256,
+        temperature: 0.1,
+        max_tokens: 512,
+        stop: ["--- FILE AFTER CURSOR ---", "<CURSOR>"]
       }),
       signal: controller.signal,
     });
@@ -75,7 +79,14 @@ async function getCompletion(document, position, token) {
   const data = await resp.json().catch(() => null);
   let text = data?.choices?.[0]?.message?.content;
   if (!text) { log("empty", JSON.stringify(data).slice(0, 300)); return null; }
+
   text = text.replace(/^```[a-zA-Z]*\n?/, "").replace(/\n?```$/, "");
+
+  const lineEnd = document.lineAt(position.line).text.slice(position.character);
+  if (lineEnd.trim() && text.startsWith(lineEnd.trim())) {
+    text = text.slice(text.indexOf(lineEnd.trim()) + lineEnd.trim().length);
+  }
+
   log("ok", text.slice(0, 60).replace(/\n/g, "\\n"));
   return text;
 }
@@ -84,6 +95,9 @@ function activate(context) {
   log("=== activate ===");
   const provider = {
     async provideInlineCompletionItems(document, position, ctx, token) {
+      if (ctx.triggerKind === vscode.InlineCompletionTriggerKind.Automatic && position.character === 0) {
+        return null;
+      }
       const text = await getCompletion(document, position, token);
       if (!text || (token && token.isCancellationRequested)) return null;
       return [new vscode.InlineCompletionItem(text, new vscode.Range(position, position))];
@@ -102,4 +116,4 @@ function activate(context) {
   );
 }
 
-module.exports = { activate, deactivate: () => {} };
+module.exports = { activate, deactivate: () => { } };
