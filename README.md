@@ -19,11 +19,22 @@ One-time Google Cloud setup (needed because there's no hosted backend):
 3. Copy the **Client ID** and **Client secret** into settings:
    - `geminiAutocomplete.clientId`
    - `geminiAutocomplete.clientSecret`
-   (Desktop-app secrets are not treated as confidential — fine to store locally.)
+     (Desktop-app secrets are not treated as confidential — fine to store locally.)
 4. Run command **Gemini Autocomplete: Login with Google** → browser opens → approve.
    Tokens are saved encrypted in VSCode SecretStorage and auto-refreshed. Log out anytime with **Gemini Autocomplete: Logout**.
 
 If a request returns **403**, adjust `geminiAutocomplete.scope`.
+
+## 🔧 Quick Test (Autocomplete Check)
+
+### Open the Command Palette
+
+1. macOS → Cmd + Shift + P
+2. Windows → Ctrl + Shift + P
+3. Linux → Ctrl + Shift + P
+
+- `Then type “Autocomplete Test” and press Enter.`
+- `If the extension is active, you’ll see a confirmation message.`
 
 ### Fallback: plain API key
 
@@ -40,6 +51,7 @@ Type code — ghost-text suggestions appear inline. `Tab` accepts.
 - Naive 300ms debounce, single-file provider, no build step.
 
 ## Support the team
+
 <a href="https://buymeacoffee.com/zaccalos" target="_blank">
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40">
 </a>
