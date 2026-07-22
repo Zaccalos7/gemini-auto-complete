@@ -1,4 +1,5 @@
-<img width="172" height="171" alt="image" src="https://github.com/user-attachments/assets/65efa974-409a-45c8-9899-e542c77194b4" />
+<img width="677" height="369" alt="keypilot" src="https://github.com/user-attachments/assets/17b71bc9-203e-46c3-b2d1-26cea97d1e0c" />
+
 
 # Keypilot
 
