@@ -162,12 +162,13 @@ async function getCompletion(document, position, token) {
 }
 
 class StatsViewProvider {
-  constructor() { this._view = null; }
+  constructor(extensionUri) { this._view = null; this._extensionUri = extensionUri; }
 
   resolveWebviewView(view) {
     this._view = view;
-    view.webview.options = { enableScripts: true };
-    view.webview.html = this._html();
+    view.webview.options = { enableScripts: true, localResourceRoots: [this._extensionUri] };
+    const logoUri = view.webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "logo-1.png"));
+    view.webview.html = this._html(logoUri);
     view.webview.onDidReceiveMessage(async msg => {
       switch (msg.command) {
         case "setApiKey":   await promptForApiKey(); break;
@@ -193,7 +194,7 @@ class StatsViewProvider {
     });
   }
 
-  _html() {
+  _html(logoUri) {
     const c = cfg();
     const key = c.get("apiKey") || "";
     const masked = key.length > 8 ? `${key.slice(0, 6)}••••${key.slice(-2)}` : key ? "••••••" : "Not set";
@@ -203,7 +204,7 @@ class StatsViewProvider {
 
     return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src ${logoUri};">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -497,7 +498,7 @@ window.addEventListener('message',e=>{
 function activate(context) {
   log("=== activate ===");
 
-  statsProvider = new StatsViewProvider();
+  statsProvider = new StatsViewProvider(context.extensionUri);
 
   statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   statusBar.command = "keypilot.openStats";
