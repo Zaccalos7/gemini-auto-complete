@@ -107,7 +107,7 @@ async function getCompletion(document, position, token) {
   if (!before.trim() && !after.trim()) return null;
 
   const lang = document.languageId;
-  const system = `${lang} completion engine. Insert at <CURSOR>. Output ONLY code—no markdown, no comments, no explanation. If lines after <CURSOR> follow the same pattern and need the same edit, include them verbatim then corrected.`;
+  const system = `You are an AI programming assistant like GitHub Copilot. Your role is to provide highly accurate and context-aware code completions. Carefully study the patterns, style, and structure of the surrounding code in the file. Infer the developer's intent and provide the exact code that should be inserted at <CURSOR>. Keep the ${lang} language and its conventions in mind. Output ONLY code—no markdown, no comments, no explanation. If lines after <CURSOR> follow the same pattern and need the same edit, include them verbatim then corrected.`;
 
   const controller = new AbortController();
   if (token) token.onCancellationRequested(() => controller.abort());
