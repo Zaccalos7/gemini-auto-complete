@@ -169,7 +169,7 @@ async function makeDummyCall() {
     return;
   }
 
-  vscode.window.showInformationMessage("KeyPilot: Avvio test consumi...");
+  vscode.window.showInformationMessage("KeyPilot: Starting token test...");
   let resp;
   try {
     resp = await fetch(c.get("endpoint"), {
@@ -185,15 +185,15 @@ async function makeDummyCall() {
       }),
     });
   } catch (e) {
-    vscode.window.showErrorMessage("KeyPilot: Errore di connessione al modello.");
+    vscode.window.showErrorMessage("KeyPilot: Error connecting to the model.");
     return;
   }
 
   if (!resp.ok) {
     if (resp.status === 429) {
-      vscode.window.showWarningMessage("KeyPilot: I token sono finiti (Limite raggiunto). Per favore, cambia modello o API Key.");
+      vscode.window.showWarningMessage("KeyPilot: Tokens exhausted (Limit reached). Please change the model or API Key.");
     } else {
-      vscode.window.showErrorMessage(`KeyPilot: Errore API (${resp.status}). Controlla modello e API Key.`);
+      vscode.window.showErrorMessage(`KeyPilot: API Error (${resp.status}). Check your model and API Key.`);
     }
     return;
   }
@@ -207,9 +207,9 @@ async function makeDummyCall() {
     stats.requests++;
     updateStatusBar();
     statsProvider?.refresh();
-    vscode.window.showInformationMessage(`KeyPilot: Test completato! Token usati: ${data.usage.total_tokens ?? 0}`);
+    vscode.window.showInformationMessage(`KeyPilot: Test completed! Tokens used: ${data.usage.total_tokens ?? 0}`);
   } else {
-    vscode.window.showWarningMessage("KeyPilot: Test completato, ma nessuna info sui token.");
+    vscode.window.showWarningMessage("KeyPilot: Test completed, but no token info received.");
   }
 }
 
@@ -511,7 +511,7 @@ body{
 
 <div style="display:flex; gap:8px;">
   <button class="reset" style="flex:1" onclick="p({command:'resetTokens'})">Reset session tokens</button>
-  <button class="reset" style="flex:1" onclick="p({command:'dummyCall'})">Test Consumi</button>
+  <button class="reset" style="flex:1" onclick="p({command:'dummyCall'})">Test Token Consumption</button>
 </div>
 
 <script>
