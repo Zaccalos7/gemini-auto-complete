@@ -161,6 +161,58 @@ async function getCompletion(document, position, token) {
   return text;
 }
 
+async function makeDummyCall() {
+  const c = cfg();
+  const apiKey = c.get("apiKey");
+  if (!apiKey?.trim()) {
+    await promptForApiKey();
+    return;
+  }
+
+  vscode.window.showInformationMessage("KeyPilot: Starting token test...");
+  let resp;
+  try {
+    resp = await fetch(c.get("endpoint"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: c.get("model"),
+        messages: [
+          { role: "user", content: "Test" }
+        ],
+        temperature: 0,
+        max_tokens: 10,
+      }),
+    });
+  } catch (e) {
+    vscode.window.showErrorMessage("KeyPilot: Error connecting to the model.");
+    return;
+  }
+
+  if (!resp.ok) {
+    if (resp.status === 429) {
+      vscode.window.showWarningMessage("KeyPilot: Tokens exhausted (Limit reached). Please change the model or API Key.");
+    } else {
+      vscode.window.showErrorMessage(`KeyPilot: API Error (${resp.status}). Check your model and API Key.`);
+    }
+    return;
+  }
+
+  const data = await resp.json().catch(() => null);
+
+  if (data?.usage) {
+    stats.prompt     += data.usage.prompt_tokens     ?? 0;
+    stats.completion += data.usage.completion_tokens ?? 0;
+    stats.total      += data.usage.total_tokens      ?? 0;
+    stats.requests++;
+    updateStatusBar();
+    statsProvider?.refresh();
+    vscode.window.showInformationMessage(`KeyPilot: Test completed! Tokens used: ${data.usage.total_tokens ?? 0}`);
+  } else {
+    vscode.window.showWarningMessage("KeyPilot: Test completed, but no token info received.");
+  }
+}
+
 class StatsViewProvider {
   constructor(extensionUri) { this._view = null; this._extensionUri = extensionUri; }
 
@@ -177,6 +229,9 @@ class StatsViewProvider {
         case "resetTokens":
           stats = { prompt: 0, completion: 0, total: 0, requests: 0 };
           updateStatusBar(); this.refresh();
+          break;
+        case "dummyCall":
+          await makeDummyCall();
           break;
       }
     });
@@ -454,7 +509,10 @@ body{
 
 <div class="sep"></div>
 
-<button class="reset" onclick="p({command:'resetTokens'})">Reset session tokens</button>
+<div style="display:flex; gap:8px;">
+  <button class="reset" style="flex:1" onclick="p({command:'resetTokens'})">Reset session tokens</button>
+  <button class="reset" style="flex:1" onclick="p({command:'dummyCall'})">Test Token Consumption</button>
+</div>
 
 <script>
 const vsc = acquireVsCodeApi();
